@@ -9,7 +9,8 @@
     "rootDir": "src",
     "moduleDetection": "force",
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vitest/globals"]
   },
   "include": ["src/**/*.ts"]
 }
