@@ -15,6 +15,13 @@ describe('POST /events', () => {
     const response = await axios.post('http://localhost:3000/events', input);
 
     expect(response.status).toBe(201);
+    expect(response.data.event.name).toBe(input.name);
+
+    expect(response.data.event.ticketPriceInCents).toBe(
+      input.ticketPriceInCents
+    );
+    // expect(response.data.latitude).toBe(input.latitude);
+    // expect(response.data.longitude).toBe(input.longitude);
   });
   test('should return 400 if createEvent throws an exception ', async () => {
     const input = {

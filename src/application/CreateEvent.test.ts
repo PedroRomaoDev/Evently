@@ -1,10 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 
-import { createEvent } from './CreateEvent.js';
+import { CreateEvent, EventRepository } from './CreateEvent.js';
 
 axios.defaults.validateStatus = () => true;
 
 describe('Create Event', () => {
+  class EventRepositoryStub implements EventRepository {
+    events: any[] = [];
+
+    async create(input: any) {
+      this.events = [...this.events, input];
+      return input;
+    }
+  }
+
+  const createEvent = new CreateEvent(new EventRepositoryStub());
   test('should create a new event', async () => {
     const input = {
       name: 'Sample Event',
@@ -14,8 +25,8 @@ describe('Create Event', () => {
       longitude: -122.4194,
       ownerId: crypto.randomUUID(),
     };
-    const output = await createEvent(input);
-
+    const output = await createEvent.execute(input);
+    expect(output.id).toBeDefined();
     expect(output.name).toBe(input.name);
     expect(output.ticketPriceInCents).toBe(input.ticketPriceInCents);
   });
@@ -28,7 +39,7 @@ describe('Create Event', () => {
       longitude: -122.4194,
       ownerId: 'invalid id',
     };
-    const output = createEvent(input);
+    const output = createEvent.execute(input);
 
     await expect(output).rejects.toThrowError('Invalid ownerId');
   });
@@ -42,7 +53,7 @@ describe('Create Event', () => {
       ownerId: crypto.randomUUID(),
     };
 
-    const output = createEvent(input);
+    const output = createEvent.execute(input);
     await expect(output).rejects.toThrowError('Invalid ticket price');
   });
   test('should throw a error if latitude is invalid', async () => {
@@ -55,7 +66,7 @@ describe('Create Event', () => {
       ownerId: crypto.randomUUID(),
     };
 
-    const output = createEvent(input);
+    const output = createEvent.execute(input);
     await expect(output).rejects.toThrowError('Invalid latitude');
   });
   test('should throw a error if longitude is invalid', async () => {
@@ -68,7 +79,7 @@ describe('Create Event', () => {
       ownerId: crypto.randomUUID(),
     };
 
-    const output = createEvent(input);
+    const output = createEvent.execute(input);
     await expect(output).rejects.toThrowError('Invalid longitude');
   });
   test('should throw a error if date is invalid', async () => {
@@ -81,7 +92,7 @@ describe('Create Event', () => {
       ownerId: crypto.randomUUID(),
     };
 
-    const output = createEvent(input);
+    const output = createEvent.execute(input);
     await expect(output).rejects.toThrowError(
       'Event date must be in the future'
     );
