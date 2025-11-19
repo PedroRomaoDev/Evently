@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { CreateEvent } from './application/CreateEvent.js';
+import { db } from './db/client.js';
 import { EventRepositoryDrizzle } from './resources/EventRepository.js';
 
 const app = express();
@@ -11,7 +12,7 @@ app.post('/events', async (req, res) => {
   const { name, ticketPriceInCents, latitude, longitude, ownerId, date } =
     req.body;
   try {
-    const eventRepositoryDrizzle = new EventRepositoryDrizzle();
+    const eventRepositoryDrizzle = new EventRepositoryDrizzle(db);
     const createEvent = new CreateEvent(eventRepositoryDrizzle);
     const event = await createEvent.execute({
       ownerId,

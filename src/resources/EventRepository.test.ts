@@ -1,8 +1,9 @@
+import { db } from '../db/client.js';
 import { EventRepositoryDrizzle } from './EventRepository.js';
 
 describe('Event Repository Drizzle', () => {
   test('should create a new event in the database', async () => {
-    const repository = new EventRepositoryDrizzle();
+    const repository = new EventRepositoryDrizzle(db);
     const id = crypto.randomUUID();
     const output = await repository.create({
       id,
