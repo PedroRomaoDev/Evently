@@ -1,21 +1,21 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 
-import { CreateEvent, EventRepository } from './CreateEvent.js';
+import { EventRepositoryDrizzle } from '../resources/EventRepository.js';
+import { CreateEvent } from './CreateEvent.js';
 
 axios.defaults.validateStatus = () => true;
 
 describe('Create Event', () => {
-  class EventRepositoryStub implements EventRepository {
-    events: any[] = [];
+  // class EventRepositoryStub implements EventRepository {
+  //   events: any[] = [];
 
-    async create(input: any) {
-      this.events = [...this.events, input];
-      return input;
-    }
-  }
+  //   async create(input: any) {
+  //     this.events = [...this.events, input];
+  //     return input;
+  //   }
+  // }
 
-  const createEvent = new CreateEvent(new EventRepositoryStub());
+  const createEvent = new CreateEvent(new EventRepositoryDrizzle());
   test('should create a new event', async () => {
     const input = {
       name: 'Sample Event',
@@ -95,6 +95,25 @@ describe('Create Event', () => {
     const output = createEvent.execute(input);
     await expect(output).rejects.toThrowError(
       'Event date must be in the future'
+    );
+  });
+  test('should throw a error if an event already exists for the same date, latitude and longitude', async () => {
+    const date = new Date(new Date(Date.now() + 86400000).toISOString());
+    const input = {
+      name: 'Sample Event',
+      date,
+      ticketPriceInCents: 5000,
+      latitude: 37.7749,
+      longitude: -180,
+      ownerId: crypto.randomUUID(),
+    };
+
+    const output = await createEvent.execute(input);
+    expect(output.name).toBe(input.name);
+
+    const output2 = createEvent.execute(input);
+    await expect(output2).rejects.toThrowError(
+      'An event already exists for the same date, latitude and longitude'
     );
   });
 });
