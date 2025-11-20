@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import { and, eq } from 'drizzle-orm';
 
 import { EventRepository } from '../application/CreateEvent.js';

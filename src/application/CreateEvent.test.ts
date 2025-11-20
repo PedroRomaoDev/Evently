@@ -1,21 +1,8 @@
-import axios from 'axios';
-
 import { db } from '../db/client.js';
 import { EventRepositoryDrizzle } from '../resources/EventRepository.js';
 import { CreateEvent } from './CreateEvent.js';
 
-axios.defaults.validateStatus = () => true;
-
 describe('Create Event', () => {
-  // class EventRepositoryStub implements EventRepository {
-  //   events: any[] = [];
-
-  //   async create(input: any) {
-  //     this.events = [...this.events, input];
-  //     return input;
-  //   }
-  // }
-
   const createEvent = new CreateEvent(new EventRepositoryDrizzle(db));
   test('should create a new event', async () => {
     const input = {
