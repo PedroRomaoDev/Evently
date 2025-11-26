@@ -12,7 +12,7 @@ describe('POST /events', () => {
       longitude: -122.4194,
       ownerId: crypto.randomUUID(),
     };
-    const response = await axios.post('http://localhost:3000/events', input);
+    const response = await axios.post('http://localhost:8080/events', input);
 
     expect(response.status).toBe(201);
     expect(response.data.name).toBe(input.name);
@@ -30,7 +30,7 @@ describe('POST /events', () => {
       longitude: -122.4194,
       ownerId: 'invalid id',
     };
-    const response = await axios.post('http://localhost:3000/events', input);
+    const response = await axios.post('http://localhost:8080/events', input);
 
     expect(response.status).toBe(400);
   });

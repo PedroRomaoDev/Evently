@@ -1,6 +1,9 @@
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUI from '@fastify/swagger-ui';
 import fastify from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import {
+  jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
 } from 'fastify-type-provider-zod';
@@ -15,10 +18,34 @@ const app = fastify();
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
+await app.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: 'Evently',
+      description:
+        'Event management API with event-driven architecture, async processing, BuildMQ messaging, AWS integration, and geolocation support.',
+      version: '1.0.0',
+    },
+    servers: [
+      {
+        url: 'http://localhost:8080',
+        description: 'Local server',
+      },
+    ],
+  },
+  transform: jsonSchemaTransform,
+});
+
+await app.register(fastifySwaggerUI, {
+  routePrefix: '/docs',
+});
+
 app.withTypeProvider<ZodTypeProvider>().route({
   method: 'POST',
   url: '/events',
   schema: {
+    tags: ['Events'],
+    summary: 'Create a new event',
     body: z.object({
       name: z.string(),
       ticketPriceInCents: z.number(),
@@ -67,6 +94,7 @@ app.withTypeProvider<ZodTypeProvider>().route({
   },
 });
 
-app.listen({ port: 3000 }, () => {
+await app.ready();
+app.listen({ port: 8080 }, () => {
   console.log('Servidor rodando na porta 3000');
 });
