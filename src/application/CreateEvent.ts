@@ -1,5 +1,12 @@
 import { OnSiteEvent } from './entities/OnSiteEvent.js';
-import { InvalidOwnerIdError } from './errors/index.js';
+import {
+  EventAlreadyExistsError,
+  InvalidDateError,
+  InvalidLatitudeError,
+  InvalidLongitudeError,
+  InvalidOwnerIdError,
+  InvalidTicketPriceError,
+} from './errors/index.js';
 
 interface Input {
   ownerId: string;
@@ -38,21 +45,21 @@ export class CreateEvent {
     }
     // tickerPriceInCents é um número inteiro?
     if (ticketPriceInCents < 0) {
-      throw new Error('Invalid ticket price');
+      throw new InvalidTicketPriceError();
     }
     // latitude é entre -90 e 90?
     if (latitude < -90 || latitude > 90) {
-      throw new Error('Invalid latitude');
+      throw new InvalidLatitudeError();
     }
     // longitude é entre -180 e 180?
     if (longitude < -180 || longitude > 180) {
-      throw new Error('Invalid longitude');
+      throw new InvalidLongitudeError();
     }
     // BUSINESS RULES
     // date é no futuro?
     const now = new Date();
     if (date < now) {
-      throw new Error('Event date must be in the future');
+      throw new InvalidDateError();
     }
     //  não posso criar um evento na mesma data (dia e horario), latitude e longitude
     const existenEvent = await this.eventRepository.getByDateLatAndLong({
@@ -61,9 +68,7 @@ export class CreateEvent {
       longitude,
     });
     if (existenEvent) {
-      throw new Error(
-        'An event already exists for the same date, latitude and longitude'
-      );
+      throw new EventAlreadyExistsError();
     }
 
     const event = await this.eventRepository.create({

@@ -1,7 +1,14 @@
 import { db } from '../db/client.js';
 import { EventRepositoryDrizzle } from '../resources/EventRepository.js';
 import { CreateEvent } from './CreateEvent.js';
-import { InvalidOwnerIdError } from './errors/index.js';
+import {
+  EventAlreadyExistsError,
+  InvalidDateError,
+  InvalidLatitudeError,
+  InvalidLongitudeError,
+  InvalidOwnerIdError,
+  InvalidTicketPriceError,
+} from './errors/index.js';
 
 describe('Create Event', () => {
   // service under test
@@ -50,7 +57,7 @@ describe('Create Event', () => {
     };
 
     const output = sut.execute(input);
-    await expect(output).rejects.toThrowError('Invalid ticket price');
+    await expect(output).rejects.toThrow(new InvalidTicketPriceError());
   });
   test('should throw a error if latitude is invalid', async () => {
     const input = {
@@ -63,7 +70,7 @@ describe('Create Event', () => {
     };
 
     const output = sut.execute(input);
-    await expect(output).rejects.toThrowError('Invalid latitude');
+    await expect(output).rejects.toThrow(new InvalidLatitudeError());
   });
   test('should throw a error if longitude is invalid', async () => {
     const input = {
@@ -76,7 +83,7 @@ describe('Create Event', () => {
     };
 
     const output = sut.execute(input);
-    await expect(output).rejects.toThrowError('Invalid longitude');
+    await expect(output).rejects.toThrow(new InvalidLongitudeError());
   });
   test('should throw a error if date is invalid', async () => {
     const input = {
@@ -89,9 +96,7 @@ describe('Create Event', () => {
     };
 
     const output = sut.execute(input);
-    await expect(output).rejects.toThrowError(
-      'Event date must be in the future'
-    );
+    await expect(output).rejects.toThrow(new InvalidDateError());
   });
   test('should throw a error if an event already exists for the same date, latitude and longitude', async () => {
     const date = new Date(new Date(Date.now() + 86400000).toISOString());
@@ -108,9 +113,7 @@ describe('Create Event', () => {
     expect(output.name).toBe(input.name);
 
     const output2 = sut.execute(input);
-    await expect(output2).rejects.toThrowError(
-      'An event already exists for the same date, latitude and longitude'
-    );
+    await expect(output2).rejects.toThrow(new EventAlreadyExistsError());
   });
   test('should call repository with correct parameters', async () => {
     const { sut, eventRepository } = makeSut();

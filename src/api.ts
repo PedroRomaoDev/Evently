@@ -10,7 +10,15 @@ import {
 import z from 'zod';
 
 import { CreateEvent } from './application/CreateEvent.js';
-import { InvalidOwnerIdError } from './application/errors/index.js';
+import {
+  EventAlreadyExistsError,
+  InvalidDateError,
+  InvalidLatitudeError,
+  InvalidLongitudeError,
+  InvalidOwnerIdError,
+  InvalidTicketPriceError,
+  NotFoundError,
+} from './application/errors/index.js';
 import { db } from './db/client.js';
 import { EventRepositoryDrizzle } from './resources/EventRepository.js';
 
@@ -69,6 +77,10 @@ app.withTypeProvider<ZodTypeProvider>().route({
         code: z.string().optional(),
         message: z.string(),
       }),
+      404: z.object({
+        code: z.string().optional(),
+        message: z.string(),
+      }),
     },
   },
   handler: async (req, res) => {
@@ -92,8 +104,21 @@ app.withTypeProvider<ZodTypeProvider>().route({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error(error);
-      if (error instanceof InvalidOwnerIdError) {
+      if (
+        error instanceof InvalidOwnerIdError ||
+        error instanceof InvalidLongitudeError ||
+        error instanceof InvalidLatitudeError ||
+        error instanceof InvalidTicketPriceError ||
+        error instanceof InvalidDateError ||
+        error instanceof EventAlreadyExistsError
+      ) {
         return res.status(400).send({
+          code: error.code,
+          message: error.message,
+        });
+      }
+      if (error instanceof NotFoundError) {
+        return res.status(404).send({
           code: error.code,
           message: error.message,
         });
