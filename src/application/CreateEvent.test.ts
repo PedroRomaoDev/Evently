@@ -1,6 +1,7 @@
 import { db } from '../db/client.js';
 import { EventRepositoryDrizzle } from '../resources/EventRepository.js';
 import { CreateEvent } from './CreateEvent.js';
+import { InvalidOwnerIdError } from './errors/index.js';
 
 describe('Create Event', () => {
   // service under test
@@ -36,7 +37,7 @@ describe('Create Event', () => {
     };
     const output = sut.execute(input);
 
-    await expect(output).rejects.toThrowError('Invalid ownerId');
+    await expect(output).rejects.toThrow(new InvalidOwnerIdError());
   });
   test('should throw a error if ticket price is negative', async () => {
     const input = {

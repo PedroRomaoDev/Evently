@@ -1,4 +1,5 @@
 import { OnSiteEvent } from './entities/OnSiteEvent.js';
+import { InvalidOwnerIdError } from './errors/index.js';
 
 interface Input {
   ownerId: string;
@@ -33,7 +34,7 @@ export class CreateEvent {
         ownerId
       )
     ) {
-      throw new Error('Invalid ownerId');
+      throw new InvalidOwnerIdError();
     }
     // tickerPriceInCents é um número inteiro?
     if (ticketPriceInCents < 0) {
