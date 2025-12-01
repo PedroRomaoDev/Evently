@@ -27,6 +27,9 @@ const app = fastify();
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
+const eventRepositoryDrizzle = new EventRepositoryDrizzle(db);
+const createEvent = new CreateEvent(eventRepositoryDrizzle);
+
 await app.register(fastifySwagger, {
   openapi: {
     info: {
@@ -87,8 +90,6 @@ app.withTypeProvider<ZodTypeProvider>().route({
     const { name, ticketPriceInCents, latitude, longitude, ownerId, date } =
       req.body;
     try {
-      const eventRepositoryDrizzle = new EventRepositoryDrizzle(db);
-      const createEvent = new CreateEvent(eventRepositoryDrizzle);
       const event = await createEvent.execute({
         ownerId,
         name,

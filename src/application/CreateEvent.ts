@@ -8,7 +8,19 @@ import {
   InvalidTicketPriceError,
 } from './errors/index.js';
 
+// DTO - Data Transfer Object
 interface Input {
+  ownerId: string;
+  name: string;
+  date: Date;
+  ticketPriceInCents: number;
+  latitude: number;
+  longitude: number;
+}
+
+//  DTO - Data Transfer Object
+interface Output {
+  id: string;
   ownerId: string;
   name: string;
   date: Date;
@@ -19,7 +31,7 @@ interface Input {
 
 // PORT
 export interface EventRepository {
-  create: (input: OnSiteEvent) => Promise<OnSiteEvent>;
+  create: (input: OnSiteEvent) => Promise<Output>;
   getByDateLatAndLong: (params: {
     date: Date;
     latitude: number;
