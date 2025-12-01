@@ -1,0 +1,16 @@
+---
+globs: *.ts
+alwaysApply: false
+---
+
+
+## REGRAS gerais
+
+- **NUNCA** use o tipo 'any'.
+- **SEMPRE** use type ao invés de interface.
+
+## Classes 
+
+- Sempre use private ou protected nas propriedades das classes. 
+
+

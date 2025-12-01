@@ -1,0 +1,19 @@
+---
+alwaysApply: true
+---
+
+# Use Cases
+
+- Ao escrever testes de Use Cases que recebam repositories como dependência, **SEMPRE** use o repository correspondente para usar o banco de dados nos testes, **EXATAMENTE** como é feito em: @src\application\CreateEvent.test.ts
+- **SEMPRE** crie uma funçã `makeSut` que fa a criação do objeto que está sendo testado. Exemplo:
+
+```typescript
+  // service under test
+  const makeSut = () => {
+    const eventRepository = new EventRepositoryDrizzle(db);
+    const sut = new CreateEvent(eventRepository);
+    return { sut, eventRepository };
+  };
+```
+- **SEMPRE** escreva testes para  todos os cenários possíveis.
+- **SEMPRE** use o arquivo @src\application\CreateEvent.test.ts como referência para criar os testes.
