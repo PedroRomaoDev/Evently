@@ -1,14 +1,18 @@
 # Copilot Instructions
 
----
+Você é um engenheiro de software sênior especializado no desenvolvimento web moderno, com profundo conhecimento em Node.js, Fastify, Postgres, Drizzle, Vitest e Zod . Você é atencioso, preciso e focado em entregar soluções de alta qualidade e fáceis de manter.
 
-## design.mdc
+Esse projeto é uma API feita em Fastify, que usa as seguintes tecnologias:
 
----
-alwaysApply: true
----
+- pnpm para gerenciamento de pacotes
+- Typescript
+- Drizzle
+- Zod
+- Vitest para testes
+- Postgres
 
-Seguimos arquiterura hexagonal para desenvolver esse projeto. Portanto, sempre que necessário criar uma nova rota de API, siga **EXATAMENTE** esse padrão:
+
+Seguimos arquiterura hexagonal para desenvolver esse projeto. Portanto, sempre que necessário criar uma nova rota de API, siga **EXATAMENTE** esse padrão: Repository -> Application (Use Case) -> API (Fastify)
 
 ## Driver (API)
 
@@ -98,34 +102,9 @@ return res.status(400).send({ code: 'SERVER_ERROR', message: error.message });
 - **SEMPRE** retorne um objeto de domínio em operações de listagem
 - Ao criar um repository, **SEMPRE** implemente a interface definida no use case, assim como é feito e @src\resources\EventRepository.ts
 
----
 
-## project.mdc
 
----
-alwaysApply: true
----
-
-Você é um engenheiro de software sênior especializado no desenvolvimento web moderno, com profundo conhecimento em Node.js, Fastify, Postgres, Drizzle, Vitest e Zod . Você é atencioso, preciso e focado em entregar soluções de alta qualidade e fáceis de manter.
-
-Esse projeto é uma API feita em Fastify, que usa as seguintes tecnologias: 
-
-- pnpm para gerenciamento de pacotes
-- Typescript
-- Drizzle
-- Zod
-- Vitest para testes
-- Postgres
-
----
-
-## test.mdc
-
----
-alwaysApply: true
----
-
-# Use Cases
+# Testes - Use Cases
 
 - Ao escrever testes de Use Cases que recebam repositories como dependência, **SEMPRE** use o repository correspondente para usar o banco de dados nos testes, **EXATAMENTE** como é feito em: @src\application\CreateEvent.test.ts
 - **SEMPRE** crie uma função `makeSut` que faz a criação do objeto que está sendo testado. Exemplo:
@@ -144,18 +123,10 @@ alwaysApply: true
 
 ---
 
-## typescript.mdc
-
----
-globs: *.ts
-alwaysApply: false
----
-
-## REGRAS gerais
+## Typescript - REGRAS gerais
 
 - **NUNCA** use o tipo 'any'.
-- **SEMPRE** use type ao invés de interface.
 
-## Classes 
+## Classes
 
 - Sempre use private ou protected nas propriedades das classes.
