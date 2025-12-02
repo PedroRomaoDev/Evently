@@ -17,9 +17,10 @@ export class EventRepositoryDrizzle
   implements EventRepository, GetEventRepository
 {
   constructor(private database: typeof db) {}
-  async getById(id: string): Promise<OnSiteEvent | null> {
+
+  async getById(eventId: string): Promise<OnSiteEvent | null> {
     const output = await this.database.query.eventsTable.findFirst({
-      where: eq(schema.eventsTable.id, id),
+      where: eq(schema.eventsTable.id, eventId),
     });
     if (!output) {
       return null;
