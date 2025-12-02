@@ -4,6 +4,7 @@ import { and, eq } from 'drizzle-orm';
 
 import { EventRepository } from '../application/CreateEvent.js';
 import { OnSiteEvent } from '../application/entities/OnSiteEvent.js';
+import type { GetEventRepository } from '../application/GetEvent.js';
 import { db } from '../db/client.js';
 import * as schema from '../db/schema.js';
 
@@ -12,8 +13,27 @@ if (!process.env.DATABASE_URL) {
 }
 
 // ADAPTER
-export class EventRepositoryDrizzle implements EventRepository {
+export class EventRepositoryDrizzle
+  implements EventRepository, GetEventRepository
+{
   constructor(private database: typeof db) {}
+  async getById(id: string): Promise<OnSiteEvent | null> {
+    const output = await this.database.query.eventsTable.findFirst({
+      where: eq(schema.eventsTable.id, id),
+    });
+    if (!output) {
+      return null;
+    }
+    return {
+      date: output.date,
+      id: output.id,
+      latitude: Number(output.latitude),
+      longitude: Number(output.longitude),
+      name: output.name,
+      ownerId: output.ownerId,
+      ticketPriceInCents: output.ticketPriceInCents,
+    };
+  }
   async getByDateLatAndLong(params: {
     date: Date;
     latitude: number;

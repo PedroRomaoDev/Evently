@@ -13,12 +13,14 @@ import { CreateEvent } from './application/CreateEvent.js';
 import {
   EventAlreadyExistsError,
   InvalidDateError,
+  InvalidEventIdError,
   InvalidLatitudeError,
   InvalidLongitudeError,
   InvalidOwnerIdError,
   InvalidTicketPriceError,
   NotFoundError,
 } from './application/errors/index.js';
+import { GetEvent } from './application/GetEvent.js';
 import { db } from './db/client.js';
 import { EventRepositoryDrizzle } from './resources/EventRepository.js';
 
@@ -29,6 +31,7 @@ app.setSerializerCompiler(serializerCompiler);
 
 const eventRepositoryDrizzle = new EventRepositoryDrizzle(db);
 const createEvent = new CreateEvent(eventRepositoryDrizzle);
+const getEvent = new GetEvent(eventRepositoryDrizzle);
 
 await app.register(fastifySwagger, {
   openapi: {
@@ -123,6 +126,68 @@ app.withTypeProvider<ZodTypeProvider>().route({
           code: error.code,
           message: error.message,
         });
+      }
+      return res
+        .status(400)
+        .send({ code: 'SERVER_ERROR', message: error.message });
+    }
+  },
+});
+
+app.withTypeProvider<ZodTypeProvider>().route({
+  method: 'GET',
+  url: '/events/:eventId',
+  schema: {
+    tags: ['Events'],
+    summary: 'Get event by id',
+    params: z.object({
+      eventId: z.string().uuid(),
+    }),
+    response: {
+      200: z.object({
+        id: z.string().uuid(),
+        name: z.string(),
+        ticketPriceInCents: z.number(),
+        longitude: z.number(),
+        latitude: z.number(),
+        ownerId: z.string().uuid(),
+        date: z.string(),
+      }),
+      400: z.object({
+        code: z.string().optional(),
+        message: z.string(),
+      }),
+      404: z.object({
+        code: z.string().optional(),
+        message: z.string(),
+      }),
+    },
+  },
+  handler: async (req, res) => {
+    const { eventId } = req.params as { eventId: string };
+    try {
+      const output = await getEvent.execute(eventId);
+      return res.send({
+        id: output.id,
+        name: output.name,
+        ticketPriceInCents: output.ticketPriceInCents,
+        longitude: output.longitude,
+        latitude: output.latitude,
+        ownerId: output.ownerId,
+        date: output.date.toISOString(),
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      console.error(error);
+      if (error instanceof InvalidEventIdError) {
+        return res
+          .status(400)
+          .send({ code: error.code, message: error.message });
+      }
+      if (error instanceof NotFoundError) {
+        return res
+          .status(404)
+          .send({ code: error.code, message: error.message });
       }
       return res
         .status(400)

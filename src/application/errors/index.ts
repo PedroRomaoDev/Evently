@@ -39,6 +39,13 @@ export class NotFoundError extends Error {
   }
 }
 
+export class InvalidEventIdError extends Error {
+  code = 'INVALID_EVENT_ID';
+  constructor() {
+    super('Invalid event id');
+  }
+}
+
 export class EventAlreadyExistsError extends Error {
   code = 'EVENT_ALREADY_EXISTS';
   constructor() {
