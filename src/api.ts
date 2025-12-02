@@ -161,19 +161,20 @@ app.withTypeProvider<ZodTypeProvider>().route({
         code: z.string().optional(),
         message: z.string(),
       }),
+      500: z.object({
+        code: z.string(),
+        message: z.string(),
+      }),
     },
   },
   handler: async (req, res) => {
-    const { eventId } = req.params as { eventId: string };
+    const { eventId } = req.params;
     try {
-      const output = await getEvent.execute(eventId);
-      return res.send({
-        id: output.id,
-        name: output.name,
-        ticketPriceInCents: output.ticketPriceInCents,
-        longitude: output.longitude,
-        latitude: output.latitude,
-        ownerId: output.ownerId,
+      const output = await getEvent.execute({
+        eventId: eventId,
+      });
+      return res.status(200).send({
+        ...output,
         date: output.date.toISOString(),
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -190,7 +191,7 @@ app.withTypeProvider<ZodTypeProvider>().route({
           .send({ code: error.code, message: error.message });
       }
       return res
-        .status(400)
+        .status(500)
         .send({ code: 'SERVER_ERROR', message: error.message });
     }
   },
