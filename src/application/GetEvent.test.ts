@@ -21,24 +21,36 @@ describe('GetEvent use-case', () => {
         return sampleEvent;
       },
     };
+
     const useCase = new GetEvent(repo);
-    const result = await useCase.execute(sampleEvent.id);
+
+    const result = await useCase.execute({ eventId: sampleEvent.id });
     expect(result).toEqual(sampleEvent);
   });
 
   test('throws InvalidEventIdError for invalid id', async () => {
-    const repo = { getById: async () => null };
+    const repo = {
+      getById: async () => {
+        throw new Error('should not reach repo for invalid id');
+      },
+    };
+
     const useCase = new GetEvent(repo);
-    await expect(async () =>
-      useCase.execute('invalid-id')
+
+    await expect(
+      useCase.execute({ eventId: 'invalid-id' })
     ).rejects.toBeInstanceOf(InvalidEventIdError);
   });
 
   test('throws NotFoundError when repository returns null', async () => {
-    const repo = { getById: async () => null };
+    const repo = {
+      getById: async () => null,
+    };
+
     const useCase = new GetEvent(repo);
-    await expect(async () =>
-      useCase.execute(sampleEvent.id)
+
+    await expect(
+      useCase.execute({ eventId: sampleEvent.id })
     ).rejects.toBeInstanceOf(NotFoundError);
   });
 });
