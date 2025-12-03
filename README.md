@@ -44,6 +44,12 @@ Ferramentas estudadas:
 -   Documentação e testes automatizados\
 -   Regras personalizadas por pasta
 
+### **Claude** (`CLAUDE.md`)
+
+-   Análise de contexto e raciocínio profundo\
+-   Refatoração orientada a arquitetura limpa\
+-   Geração de documentação técnica detalhada
+
 ### **Gemini CLI** (`GEMINI.md`)
 
 -   Execução de prompts via terminal\
